@@ -16,13 +16,10 @@ const client = new Client({
 
 client.on(Events.Raw, async (packet) => {
   if (packet.t !== "MESSAGE_CREATE") return;
-  if (packet.d.channel_type !== ChannelType.DM) return;
-
   const data = packet.d;
 
   // skips bot message, this is to avoid infinite loop
-  if (data.author?.bot) return;
-  if (client.channels.cache.has(data.channel_id)) return;
+  if (data.author.bot) return;
   try {
     // fetch the channel so discord.js caches it
     const channel = await client.channels.fetch(data.channel_id);
