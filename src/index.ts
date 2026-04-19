@@ -63,7 +63,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
     const messageContent = message.content.trim();
     const filePath = await appendMessage(messageContent);
 
-    await message.reply(`Saved to ${path.basename(filePath)}`);
+    // await message.reply(`Saved to ${path.basename(filePath)}`);
   } catch (error) {
     console.error(error);
     await message.reply("Failed to save message to file");
@@ -74,18 +74,18 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
   if (interaction.isChatInputCommand()) {
     switch (interaction.commandName) {
       case "standup":
-        await createModal(interaction);
+        return await createModal(interaction);
       default:
-        interaction.reply("No such command");
+        return await interaction.reply("No such command");
     }
   }
 
   if (interaction.isModalSubmit()) {
     switch (interaction.customId) {
       case "standup-modal":
-        await submitModal(interaction);
+        return await submitModal(interaction);
       default:
-        interaction.reply("Failed to submit");
+        return await interaction.reply("Failed to submit");
     }
   }
 });
