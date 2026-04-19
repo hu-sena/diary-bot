@@ -1,12 +1,10 @@
 import "dotenv/config";
+import { postPrompt } from "./postPrompt";
 
 type LearningContext = {
   keywords: string[];
   learning: string;
 };
-
-const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 export const createLearningNotes = async (input: LearningContext) => {
   const prompt = `You are a personal knowledge assistant. User just had a learning session.
@@ -25,43 +23,13 @@ export const createLearningNotes = async (input: LearningContext) => {
  
   Return ONLY the markdown content, no preamble.`;
 
-  const response = await fetch(ANTHROPIC_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": `${ANTHROPIC_API_KEY}`,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1500,
-      tools: [
-        {
-          type: "web_search_20250305",
-          name: "web_search",
-          max_uses: 3,
-        },
-      ],
-      message: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    }),
-  });
-  if (!response.ok) {
-    // TODO: error response schema
-    const error = await response.text;
-    throw new Error(`Anthropic API error: ${error}`);
-  }
+  // const data = await postPrompt(prompt);
 
-  const data = await response.json();
-
-  const fullText = data.content
-    .map((block) => (block.type === "text" ? (block.text ?? "") : ""))
-    .filter(Boolean)
-    .join("\n");
+  const fullText = "";
+  // data.content
+  //   .map((block) => (block.type === "text" ? (block.text ?? "") : ""))
+  //   .filter(Boolean)
+  //   .join("\n");
 
   return fullText ?? "No research notes generated";
 };
