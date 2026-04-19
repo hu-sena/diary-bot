@@ -7,9 +7,23 @@ import {
   ChannelType,
   Message,
   GatewayReceivePayload,
+  Interaction,
+  REST,
+  Routes,
 } from "discord.js";
 import { appendToFile } from "./diary/appendToFile";
 import path from "path";
+import { commandInputData, createModal } from "./standup/createModal";
+import { submitModal } from "./standup/submitModal";
+
+const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN!;
+const DISCORD_USER_ID = process.env.DISCORD_USER_ID!;
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+
+const rest = new REST({ version: "10" }).setToken(DISCORD_BOT_TOKEN);
+await rest.put(Routes.applicationCommands(DISCORD_CLIENT_ID), {
+  body: [commandInputData.toJSON()],
+});
 
 const client = new Client({
   intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.MessageContent],
@@ -44,7 +58,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
   console.log(message);
   try {
     if (message.author.bot) return;
-    if (message.author.id !== process.env.DISCORD_USER_ID) return;
+    if (message.author.id !== DISCORD_USER_ID) return;
 
     const messageContent = message.content.trim();
     const filePath = await appendToFile(messageContent);
@@ -56,4 +70,24 @@ client.on(Events.MessageCreate, async (message: Message) => {
   }
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.on(Events.InteractionCreate, async (interaction: Interaction) => {
+  if (interaction.isChatInputCommand()) {
+    switch (interaction.commandName) {
+      case "standup":
+        await createModal(interaction);
+      default:
+        interaction.reply("No such command");
+    }
+  }
+
+  if (interaction.isModalSubmit()) {
+    switch (interaction.customId) {
+      case "standup-modal":
+        await submitModal(interaction);
+      default:
+        interaction.reply("Failed to submit");
+    }
+  }
+});
+
+client.login(DISCORD_BOT_TOKEN);
