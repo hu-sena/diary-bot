@@ -5,8 +5,10 @@ import {
   Partials,
   Events,
   ChannelType,
+  Message,
+  GatewayReceivePayload,
 } from "discord.js";
-import { appendToFile } from "./appendToFile";
+import { appendToFile } from "./diary/appendToFile";
 import path from "path";
 
 const client = new Client({
@@ -14,7 +16,12 @@ const client = new Client({
   partials: [Partials.Channel, Partials.Message, Partials.User],
 });
 
-client.on(Events.Raw, async (packet) => {
+client.once(Events.ClientReady, (client: Client) => {
+  if (!client.user) return;
+  console.log(`Bot: ${client.user.tag}`);
+});
+
+client.on(Events.Raw, async (packet: GatewayReceivePayload) => {
   if (packet.t !== "MESSAGE_CREATE") return;
   const data = packet.d;
 
@@ -33,7 +40,7 @@ client.on(Events.Raw, async (packet) => {
   }
 });
 
-client.on(Events.MessageCreate, async (message) => {
+client.on(Events.MessageCreate, async (message: Message) => {
   console.log(message);
   try {
     if (message.author.bot) return;
@@ -47,10 +54,6 @@ client.on(Events.MessageCreate, async (message) => {
     console.error(error);
     await message.reply("Failed to save message to file");
   }
-});
-
-client.once(Events.ClientReady, (client) => {
-  console.log(`Bot: ${client.user.tag}`);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
