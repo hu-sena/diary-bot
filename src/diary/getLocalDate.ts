@@ -1,5 +1,5 @@
 export const getLocalDate = () => {
-  const now = new Date();
+  const today = new Date();
 
   const dateFormatter = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Kuala_Lumpur",
@@ -8,6 +8,6 @@ export const getLocalDate = () => {
     day: "2-digit",
   });
 
-  const [year, month, day] = dateFormatter.format(now).split("-");
+  const [year, month, day] = dateFormatter.format(today).split("-");
   return { year, month, day, date: `${year}-${month}-${day}` };
 };

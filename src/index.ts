@@ -11,7 +11,7 @@ import {
   REST,
   Routes,
 } from "discord.js";
-import { appendToFile } from "./diary/appendToFile";
+import { appendMessage } from "./diary/appendMessage";
 import path from "path";
 import { commandInputData, createModal } from "./standup/createModal";
 import { submitModal } from "./standup/submitModal";
@@ -61,7 +61,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.id !== DISCORD_USER_ID) return;
 
     const messageContent = message.content.trim();
-    const filePath = await appendToFile(messageContent);
+    const filePath = await appendMessage(messageContent);
 
     await message.reply(`Saved to ${path.basename(filePath)}`);
   } catch (error) {
