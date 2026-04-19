@@ -16,23 +16,24 @@ export const formatNotes = (input: NoteInput): string => {
   const tagsList = tags.map((tag) => `${tag}`).join(", ");
   const keywordsList = keywords.map((keyword) => `${keyword}`).join(", ");
 
-  const formattedNotes = `---
-  date: ${date}
-  tags: [${tagsList}]
-  ---
-  
-  ## what i did today
-  ${today}
-
-  ## what i learned
-  ${learning}
-
-  ## keywords
-  ${keywordsList}
-
-  ## research notes
-  ${researchNotes}
-  `;
+  const formattedNotes: string = [
+    "---",
+    `date: ${date}`,
+    `tags: [${tagsList}]`,
+    "---",
+    "### what i did today",
+    `${today}`,
+    "",
+    "### what i learned",
+    `${learning}`,
+    "",
+    "### keywords",
+    `${keywordsList}`,
+    "",
+    "### research notes",
+    `${researchNotes}`,
+    "",
+  ].join("\n");
 
   return formattedNotes;
 };
